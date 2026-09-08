@@ -1,0 +1,91 @@
+openapi: 3.1.0
+info:
+  title: RTPSC Internal Refund Operations API
+  version: 1.0.0
+  description: Internal-only refund tracking, analytic footprints, WMR observation recording, reconciliation, and worker telemetry. This API does not automate or scrape IRS Where's My Refund.
+servers:
+  - url: https://internal.invalid
+    description: Placeholder only; bind to private network/runtime configuration.
+paths:
+  /internal/v1/refunds/live-feed:
+    get:
+      operationId: getRefundLiveFeed
+      responses:
+        '200': { description: Role-filtered live feed }
+  /internal/v1/refunds/kpis:
+    get:
+      operationId: getRefundKpis
+      responses:
+        '200': { description: Aggregate refund KPIs }
+  /internal/v1/refunds/cases/{id}/timeline:
+    get:
+      operationId: getRefundTimeline
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Immutable case timeline }
+  /internal/v1/refunds/cases/{id}/traces:
+    get:
+      operationId: getRefundTraces
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Authorized analytic trace feed }
+  /internal/v1/refunds/cases/{id}/wmr-observations:
+    post:
+      operationId: createWmrObservation
+      description: Records a human/client-reported observation from the official WMR experience. No browser automation or scraping.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [stage, observedAt, observedBy]
+              properties:
+                stage:
+                  type: string
+                  enum: [RETURN_RECEIVED, REFUND_APPROVED, REFUND_SENT]
+                observedAt: { type: string, format: date-time }
+                observedBy: { type: string }
+                note: { type: string, maxLength: 1000 }
+      responses:
+        '201': { description: Observation recorded as non-authoritative unless separately verified }
+  /internal/v1/refunds/cases/{id}/reconcile:
+    post:
+      operationId: queueRefundReconciliation
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '202': { description: Reconciliation queued }
+  /internal/v1/refunds/imports:
+    post:
+      operationId: queueRefundImport
+      description: Queues approved secure import. Identity columns are tokenized/vaulted and excluded from traces.
+      responses:
+        '202': { description: Import queued }
+  /internal/v1/refunds/workers/queue:
+    get:
+      operationId: getRefundWorkerQueue
+      responses:
+        '200': { description: Queue depth and job state }
+  /internal/v1/refunds/workers/runs:
+    get:
+      operationId: getRefundWorkerRuns
+      responses:
+        '200': { description: Worker execution telemetry }

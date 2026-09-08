@@ -1,0 +1,20 @@
+{
+  "module": "refund-operations",
+  "enabled": true,
+  "publicTaxpayerLookup": false,
+  "wmrBrowserAutomation": false,
+  "wmrScraping": false,
+  "rawSsnPersistence": false,
+  "rawTaxCredentialLogging": false,
+  "clientReportedWmrEnabled": true,
+  "authorizedIrsEvidenceEnabled": true,
+  "bankProductEvidenceEnabled": true,
+  "humanReviewRequiredForExternalConclusion": true,
+  "workerDefaults": {
+    "maxAttempts": 5,
+    "leaseSeconds": 120,
+    "deadLetterEnabled": true
+  },
+  "staleThresholdHours": 48,
+  "analyticsRefreshMinutes": 15
+}
