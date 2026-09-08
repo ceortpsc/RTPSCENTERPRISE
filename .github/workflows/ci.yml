@@ -1,0 +1,43 @@
+name: RTPSC CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: package.json
+      - run: npm install --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm run build
+  masterfiles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r services/tax-masterfiles/requirements.txt
+      - run: python -m unittest discover -s services/tax-masterfiles/tests -v
+        env:
+          PYTHONPATH: services/tax-masterfiles
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Block common restricted exports and secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-files | grep -Ei '(^|/)(client-data|taxpayer-data|restricted-data|exports)/|\.env$|\.p12$|\.pfx$|\.key$|\.pem$|tax-export\.csv$'; then
+            echo 'Restricted or secret-bearing file pattern detected in Git.' >&2
+            exit 1
+          fi

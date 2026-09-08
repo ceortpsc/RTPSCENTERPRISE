@@ -1,0 +1,55 @@
+{
+  "version": "1.1.0",
+  "system": "RTPSC Enterprise Workflows",
+  "controls": {
+    "verifyWrites": true,
+    "auditMaterialActions": true,
+    "leastPrivilege": true,
+    "restrictedDataInLogs": false
+  },
+  "workflows": [
+    {
+      "id": "wf_onboarding_preparer",
+      "trigger": "user.role.assigned.preparer",
+      "steps": [
+        { "id": "verify_hr_record", "type": "gate", "approval": "PENDING_SUPERVISOR_APPROVAL" },
+        { "id": "create_user_record", "type": "db", "table": "app_user" },
+        { "id": "assign_roles", "type": "db", "table": "user_role", "roles": ["preparer"] },
+        { "id": "enroll_courses", "type": "api", "endpoint": "/v1/university/courses" },
+        { "id": "audit_onboarding", "type": "audit", "event": "CREATE" }
+      ]
+    },
+    {
+      "id": "wf_support_intake",
+      "trigger": "support.request.received",
+      "steps": [
+        { "id": "authenticate", "type": "gate" },
+        { "id": "classify", "type": "rules" },
+        { "id": "risk_authority_check", "type": "gate" },
+        { "id": "route", "type": "queue" },
+        { "id": "write_transcript", "type": "audit" }
+      ]
+    },
+    {
+      "id": "wf_tax_notice",
+      "trigger": "tax.notice.uploaded",
+      "steps": [
+        { "id": "verify_identity_authority", "type": "gate" },
+        { "id": "capture_notice_fields", "type": "rules" },
+        { "id": "compare_verified_sources", "type": "review" },
+        { "id": "tax_professional_review", "type": "approval", "approval": "TAX_PROFESSIONAL_REVIEW_REQUIRED" },
+        { "id": "submit_verified_channel", "type": "integration", "failClosed": true },
+        { "id": "record_delivery", "type": "audit" }
+      ]
+    },
+    {
+      "id": "wf_daily_maintenance",
+      "trigger": "cron.daily",
+      "steps": [
+        { "id": "expire_sessions", "type": "security" },
+        { "id": "verify_worker_health", "type": "health" },
+        { "id": "archive_logs", "type": "retention" }
+      ]
+    }
+  ]
+}

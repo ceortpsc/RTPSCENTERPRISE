@@ -1,0 +1,68 @@
+openapi: 3.1.0
+info:
+  title: RTPSC Enterprise API
+  version: 1.1.0
+  description: Public contract for authenticated RTPSC enterprise services. Restricted credentials and taxpayer identifiers are intentionally excluded from schemas.
+servers:
+  - url: https://rtpsc-api.onrender.com
+security:
+  - bearerAuth: []
+paths:
+  /health:
+    get:
+      security: []
+      summary: Service health
+      responses:
+        '200': { description: Healthy }
+  /v1/me:
+    get:
+      summary: Current authenticated user
+      responses:
+        '200': { description: User profile }
+        '401': { description: Unauthorized }
+  /v1/tpvo/clients:
+    get:
+      summary: Tenant-scoped client summaries
+      responses:
+        '200': { description: Client summaries }
+  /v1/tpvo/returns:
+    get:
+      summary: Tenant-scoped return summaries
+      responses:
+        '200': { description: Return summaries }
+  /v1/university/courses:
+    get:
+      summary: Courses visible to the authenticated user
+      responses:
+        '200': { description: Courses }
+  /v1/university/progress:
+    get:
+      summary: Learner progress
+      responses:
+        '200': { description: Progress summary }
+  /v1/edrive/labs:
+    get:
+      summary: E-Drive labs and coursework resources
+      responses:
+        '200': { description: Labs }
+  /v1/payroll/runs:
+    get:
+      summary: Authorized payroll-run summaries
+      responses:
+        '200': { description: Payroll runs }
+  /v1/payroll/employees:
+    get:
+      summary: Authorized employee summaries
+      responses:
+        '200': { description: Employees }
+  /v1/solutions/programs:
+    get:
+      summary: Tax solution programs
+      responses:
+        '200': { description: Programs }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
