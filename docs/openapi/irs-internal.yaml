@@ -1,0 +1,58 @@
+openapi: 3.1.0
+info:
+  title: RTPSC Internal IRS Account Evidence API
+  version: 0.1.0
+  description: Internal-only starter contract. Live IRS connectivity is disabled until release gates pass.
+servers:
+  - url: https://internal.invalid/internal/v1/irs
+paths:
+  /data-requests:
+    post:
+      summary: Create a human-initiated case-specific IRS data request
+      responses:
+        '202': { description: Request accepted for preflight }
+  /data-requests/{id}:
+    get:
+      summary: Read request/preflight state
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Request state }
+  /data-requests/{id}/approve:
+    post:
+      summary: Record required human policy approval
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Approval recorded }
+  /data-requests/{id}/execute:
+    post:
+      summary: Queue an already-approved request; worker service account only
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '202': { description: Queued or fail-closed blocked }
+  /reconciliation-runs:
+    post:
+      summary: Reconcile verified evidence with assigned client records
+      responses:
+        '202': { description: Reconciliation queued }
+  /communications/{id}/dispatch:
+    post:
+      summary: Dispatch exact human-approved client message over approved secure channel
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '202': { description: Dispatch queued }

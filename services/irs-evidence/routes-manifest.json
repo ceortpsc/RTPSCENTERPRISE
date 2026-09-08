@@ -1,0 +1,19 @@
+{
+  "basePath": "/internal/v1/irs",
+  "public": false,
+  "routes": [
+    {"method":"POST","path":"/data-requests","purpose":"Human creates case-specific request"},
+    {"method":"GET","path":"/data-requests/{id}","purpose":"Read request/preflight"},
+    {"method":"POST","path":"/data-requests/{id}/approve","purpose":"Policy approval"},
+    {"method":"POST","path":"/data-requests/{id}/reject","purpose":"Reject/remediate"},
+    {"method":"POST","path":"/data-requests/{id}/execute","purpose":"Worker queues approved job"},
+    {"method":"GET","path":"/data-requests/{id}/result","purpose":"Assigned practitioner/QC result"},
+    {"method":"POST","path":"/authorizations/{id}/verify","purpose":"Verify 2848/8821 scope"},
+    {"method":"POST","path":"/transcripts/{id}/parse","purpose":"Queue parser"},
+    {"method":"POST","path":"/reconciliation-runs","purpose":"Compare verified evidence"},
+    {"method":"POST","path":"/communications/drafts","purpose":"Draft communication"},
+    {"method":"POST","path":"/communications/{id}/approve","purpose":"Human approval"},
+    {"method":"POST","path":"/communications/{id}/dispatch","purpose":"Approved client message only"},
+    {"method":"GET","path":"/analytics/live-feed","purpose":"Role-filtered internal operations"}
+  ]
+}

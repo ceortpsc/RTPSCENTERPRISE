@@ -1,0 +1,6 @@
+{
+  "irsEvidenceModule": true,
+  "irsLiveRetrieval": false,
+  "irsClientCommunicationDispatch": false,
+  "irsAiDrafting": true
+}
