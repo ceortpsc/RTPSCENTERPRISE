@@ -1,4 +1,5 @@
 import { PUBLIC_COMPANY } from "@/lib/company";
+import { Badge, Card, Progress, SectionHeading, Stat } from "@/components/ui";
 
 const divisions = [
   ["Tax Practitioner Virtual Office", "Tax preparation workflows, client cases, notices, transcripts and secure practitioner operations."],
@@ -21,23 +22,34 @@ export default function HomePage() {
       </header>
 
       <section id="top" className="hero shell">
-        <div className="eyebrow">Ross Tax Pro Software Co.</div>
-        <h1>One enterprise operating system for tax, payroll, education, documents and support.</h1>
-        <p className="hero-copy">A modular RTPSC foundation with role-based access, audit logging, controlled document handling, workflow automation and tenant-aware service boundaries.</p>
-        <div className="hero-actions">
-          <a className="btn btn-primary" href="#divisions">Explore divisions</a>
-          <a className="btn btn-secondary" href="/api/health">System health</a>
+        <div className="hero-layout">
+          <div>
+            <div className="eyebrow">Ross Tax Pro Software Co.</div>
+            <h1>One enterprise operating system for tax, payroll, education, documents and support.</h1>
+            <p className="hero-copy">A modular RTPSC foundation with role-based access, audit logging, controlled document handling, workflow automation and tenant-aware service boundaries.</p>
+            <div className="hero-actions"><a className="btn btn-primary" href="#divisions">Explore divisions</a><a className="btn btn-secondary" href="/api/health">System health</a></div>
+          </div>
+          <aside className="command-card" aria-label="Enterprise readiness summary">
+            <div className="command-card-header"><span>Enterprise readiness</span><Badge tone="success">Operational</Badge></div>
+            <Progress label="Platform foundation" value={92} />
+            <Progress label="Security controls" value={88} />
+            <Progress label="Workflow coverage" value={76} />
+          </aside>
         </div>
       </section>
 
+      <section className="shell stats-grid" aria-label="Platform statistics">
+        <Stat label="Enterprise divisions" value="06" detail="Unified access point" />
+        <Stat label="Audit policy" value="100%" detail="Material actions recorded" />
+        <Stat label="Support posture" value="24/7" detail="Workflow-ready routing" />
+        <Stat label="Data boundary" value="RBAC" detail="Least-privilege controls" />
+      </section>
+
       <section id="divisions" className="shell section">
-        <div className="section-heading">
-          <div><span className="eyebrow">Platform map</span><h2>Enterprise divisions</h2></div>
-          <span className="badge">PUBLIC SAFE VIEW</span>
-        </div>
+        <SectionHeading eyebrow="Platform map" title="Enterprise divisions" description="One governed system, six purpose-built operating environments." action={<Badge>Public safe view</Badge>} />
         <div className="grid">
           {divisions.map(([title, description]) => (
-            <article className="card" key={title}><h3>{title}</h3><p>{description}</p><span className="card-link">Workspace module →</span></article>
+            <Card key={title}><span className="card-index">{String(divisions.findIndex(item => item[0] === title) + 1).padStart(2, "0")}</span><h3>{title}</h3><p>{description}</p><span className="card-link">Workspace module →</span></Card>
           ))}
         </div>
       </section>

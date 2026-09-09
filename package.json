@@ -8,8 +8,9 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test:masterfiles": "python3 -m unittest discover -s services/tax-masterfiles/tests -v",
-    "verify": "npm run typecheck && npm run build && npm run test:masterfiles"
+    "test:masterfiles": "node scripts/test-masterfiles.mjs",
+    "verify": "npm run typecheck && npm run build && npm run test:masterfiles",
+    "deploy:render": "bash scripts/render-deploy.sh"
   },
   "dependencies": {
     "next": "16.3.3",

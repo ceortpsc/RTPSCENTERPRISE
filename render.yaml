@@ -33,6 +33,25 @@ services:
       - key: CORS_ALLOWED_ORIGINS
         sync: false
 
+  - type: worker
+    name: rtpsc-maintenance-worker
+    runtime: node
+    plan: 0.5c-512mb
+    buildCommand: npm install --no-audit --no-fund
+    startCommand: node server/worker.mjs
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: 24.20.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: rtpsc-postgres
+          property: connectionString
+
+previews:
+  generation: manual
+  expireAfterDays: 7
+
 databases:
   - name: rtpsc-postgres
     plan: 0.5c-1g
