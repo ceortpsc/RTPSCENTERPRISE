@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: comeaux-clinical-store-staging
+    runtime: node
+    region: ohio
+    plan: starter
+    branch: feature/comeaux-clinical-store
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/comeaux/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NEXT_PUBLIC_COMEAUX_STORE_ORIGIN
+        sync: false
+      - key: NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+        sync: false
+      - key: NEXT_PUBLIC_GA4_MEASUREMENT_ID
+        sync: false
+      - key: NEXT_PUBLIC_GOOGLE_IDENTITY_CLIENT_ID
+        sync: false
+      - key: GOOGLE_MERCHANT_ACCOUNT_ID
+        sync: false
+      - key: GOOGLE_MERCHANT_DATASOURCE_ID
+        sync: false
+      - key: GOOGLE_SERVICE_ACCOUNT_EMAIL
+        sync: false
+      - key: GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
+        sync: false
+      - key: COMEAUX_ADMIN_SYNC_KEY
+        generateValue: true
+      - key: GOOGLE_RECAPTCHA_PROJECT_ID
+        sync: false
+      - key: GOOGLE_RECAPTCHA_SITE_KEY
+        sync: false
+      - key: GOOGLE_RECAPTCHA_API_KEY
+        sync: false
+      - key: NEXT_PUBLIC_GOOGLE_PAY_ENVIRONMENT
+        value: TEST
+      - key: NEXT_PUBLIC_GOOGLE_PAY_MERCHANT_ID
+        sync: false
+      - key: NEXT_PUBLIC_GOOGLE_PAY_MERCHANT_NAME
+        value: Comeaux Clinical Supply & Print Co.
+      - key: NEXT_PUBLIC_GOOGLE_PAY_GATEWAY
+        sync: false
+      - key: NEXT_PUBLIC_GOOGLE_PAY_GATEWAY_MERCHANT_ID
+        sync: false
