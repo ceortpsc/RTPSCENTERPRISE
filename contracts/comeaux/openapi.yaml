@@ -1,0 +1,116 @@
+openapi: 3.1.0
+info:
+  title: Comeaux Clinical Platform API
+  version: 2026.09.12
+  description: >-
+    Contract for the Comeaux Clinical Supply storefront, mobile bootstrap,
+    platform release metadata and integration health surfaces.
+servers:
+  - url: https://comeaux-clinical-store-staging.onrender.com
+    description: Staging
+  - url: http://localhost:3000
+    description: Local development
+tags:
+  - name: Platform
+  - name: Mobile
+  - name: Health
+paths:
+  /api/comeaux/health:
+    get:
+      tags: [Health]
+      operationId: getComeauxHealth
+      summary: Read non-secret integration readiness and service health.
+      responses:
+        '200':
+          description: Health response
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, service, integrations, time]
+                properties:
+                  ok: { type: boolean }
+                  service: { type: string }
+                  integrations:
+                    type: object
+                    additionalProperties: { type: boolean }
+                  time: { type: string, format: date-time }
+  /api/comeaux/platform/manifest:
+    get:
+      tags: [Platform]
+      operationId: getPlatformManifest
+      summary: Read release, API contract, iOS and cloud-integration metadata.
+      responses:
+        '200':
+          description: Platform manifest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformManifest'
+  /api/comeaux/mobile/bootstrap:
+    get:
+      tags: [Mobile]
+      operationId: getMobileBootstrap
+      summary: Bootstrap native clients with branding, feature gates and public endpoints.
+      responses:
+        '200':
+          description: Mobile bootstrap
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MobileBootstrap'
+components:
+  schemas:
+    PlatformManifest:
+      type: object
+      required: [schemaVersion, platform, version, commit, environment, contracts, mobile, integrations, generatedAt]
+      properties:
+        schemaVersion: { type: string }
+        platform: { type: string }
+        version: { type: string }
+        commit: { type: string }
+        environment: { type: string }
+        runtime: { type: string }
+        contracts:
+          type: object
+          properties:
+            openapiRepositoryPath: { type: string }
+            health: { type: string, format: uri }
+            mobileBootstrap: { type: string, format: uri }
+        mobile:
+          type: object
+          properties:
+            ios:
+              type: object
+              properties:
+                minimumOS: { type: string }
+                bundleId: { type: string }
+                releaseChannel: { type: string }
+        integrations:
+          type: object
+          properties:
+            apigeeApiHubConfigured: { type: boolean }
+            artifactRegistryConfigured: { type: boolean }
+            render: { type: boolean }
+            googleIdentity: { type: boolean }
+        generatedAt: { type: string, format: date-time }
+    MobileBootstrap:
+      type: object
+      required: [apiVersion, minimumIOS, brand, features, endpoints]
+      properties:
+        apiVersion: { type: string }
+        minimumIOS: { type: string }
+        brand:
+          type: object
+          properties:
+            name: { type: string }
+            academy: { type: string }
+            theme:
+              type: object
+              additionalProperties: { type: string }
+        features:
+          type: object
+          additionalProperties: { type: boolean }
+        endpoints:
+          type: object
+          additionalProperties: { type: string, format: uri }

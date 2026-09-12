@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0.0",
+  "platform": "comeaux-clinical",
+  "releaseVersion": "2026.09.12",
+  "googleCloud": {
+    "projectEnv": "GCP_PROJECT_ID",
+    "locationEnv": "GCP_ARTIFACT_LOCATION",
+    "repositories": [
+      {
+        "id": "comeaux-containers",
+        "format": "docker",
+        "purpose": "Immutable web/API OCI images",
+        "immutableTags": true
+      },
+      {
+        "id": "comeaux-release-artifacts",
+        "format": "generic",
+        "purpose": "OpenAPI specs, iOS archives, PDF catalogs, manifests and release evidence"
+      }
+    ]
+  },
+  "packages": [
+    {
+      "package": "api-contracts",
+      "repository": "comeaux-release-artifacts",
+      "source": "contracts/comeaux/openapi.yaml",
+      "version": "2026.09.12"
+    },
+    {
+      "package": "release-manifest",
+      "repository": "comeaux-release-artifacts",
+      "source": "config/comeaux.artifacts.json",
+      "version": "2026.09.12"
+    },
+    {
+      "package": "ios-app",
+      "repository": "comeaux-release-artifacts",
+      "source": "build/ios/ComeauxClinical.xcarchive.zip",
+      "version": "1.0.0-staging"
+    }
+  ],
+  "governance": {
+    "requireCommitSha": true,
+    "requireOpenApiContract": true,
+    "requireBuildPass": true,
+    "requireArtifactChecksum": true,
+    "productionPromotionRequiresApproval": true
+  }
+}
