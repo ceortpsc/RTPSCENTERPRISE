@@ -29,6 +29,7 @@ create table if not exists comeaux.account_creation_registry (
   id uuid primary key default gen_random_uuid(),
   professional_registry_id uuid not null unique references comeaux.professional_registry(id) on delete cascade,
   intended_account_type text not null default 'customer' check (intended_account_type in ('customer','employee')),
+  intended_email text,
   intended_program_code text references comeaux.discount_programs(code),
   account_status text not null default 'preverified' check (account_status in ('preverified','linked','revoked')),
   linked_user_id uuid references comeaux.users(id) on delete set null,
@@ -36,6 +37,9 @@ create table if not exists comeaux.account_creation_registry (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table comeaux.account_creation_registry
+  add column if not exists intended_email text;
 
 with upserted as (
   insert into comeaux.professional_registry (
@@ -93,12 +97,14 @@ with upserted as (
 insert into comeaux.account_creation_registry (
   professional_registry_id,
   intended_account_type,
+  intended_email,
   intended_program_code,
   account_status
 )
-select id, 'customer', 'TX-CARE-VERIFIED', 'preverified'
+select id, 'customer', 'alzorc@outlook.com', 'TX-CARE-VERIFIED', 'preverified'
 from upserted
 on conflict (professional_registry_id) do update set
+  intended_email = excluded.intended_email,
   intended_program_code = excluded.intended_program_code,
   account_status = case
     when comeaux.account_creation_registry.linked_user_id is null then 'preverified'
@@ -206,6 +212,28 @@ begin
 end;
 $$;
 
+-- Create or reuse the initial customer account by verified email, then link the
+-- preverified professional record and activate the verified-care discount.
+with customer as (
+  insert into comeaux.users (email, display_name, status)
+  values ('alzorc@outlook.com', 'Alzora Martin Comeaux', 'active')
+  on conflict (email) do update set
+    display_name = excluded.display_name,
+    status = 'active',
+    updated_at = now()
+  returning id
+), registry as (
+  select pr.id
+  from comeaux.professional_registry pr
+  join comeaux.account_creation_registry acr on acr.professional_registry_id = pr.id
+  where acr.intended_email = 'alzorc@outlook.com'
+    and pr.credential_kind = 'LVN'
+    and pr.verification_status = 'verified'
+  limit 1
+)
+select comeaux.link_preverified_professional_account(registry.id, customer.id, null)
+from registry cross join customer;
+
 create or replace view comeaux.professional_account_registry as
 select
   pr.id as professional_registry_id,
@@ -218,6 +246,7 @@ select
   pr.compact_status,
   pr.expiration_date,
   pr.verification_status,
+  acr.intended_email,
   acr.account_status,
   acr.intended_program_code,
   acr.linked_user_id,
