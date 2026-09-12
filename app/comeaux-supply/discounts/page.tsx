@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CREDENTIALS, TEXAS_CARE_DISCOUNT } from "@/lib/comeaux/discounts";
+import { CREDENTIALS, PROMOTION_TEMPLATES, TEXAS_CARE_DISCOUNT } from "@/lib/comeaux/discounts";
 import styles from "../store.module.css";
 
 export const revalidate = 3600;
@@ -32,6 +32,26 @@ export default function DiscountsPage() {
             <a className={styles.secondary} href={item.verificationUrl} target="_blank" rel="noreferrer">Open official verification source</a>
           </article>
         ))}
+      </div>
+
+      <div className={styles.panel} style={{marginTop:"1.4rem"}}>
+        <div className={styles.eyebrow}>Promos & sale templates</div>
+        <h2>Built for appreciation campaigns without uncontrolled coupon stacking</h2>
+        <div className={styles.grid}>
+          {PROMOTION_TEMPLATES.map(promo => (
+            <article className={styles.card} key={promo.code}>
+              <span className={styles.sku}>{promo.code}</span>
+              <h3>{promo.name}</h3>
+              <div className={styles.price}>{promo.discountPercent}%</div>
+              <p>{promo.description}</p>
+              <div className={styles.chips}>
+                <span className={styles.chip}>{promo.audience}</span>
+                <span className={styles.chip}>{promo.oneTimePerCustomer ? "one-time" : "campaign"}</span>
+                <span className={styles.chip}>{promo.activeByDefault ? "active" : "admin activation required"}</span>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
 
       <div className={styles.panel} style={{marginTop:"1.4rem"}}>
