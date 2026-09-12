@@ -1,0 +1,58 @@
+name: Comeaux Platform Release
+
+on:
+  pull_request:
+    paths:
+      - 'app/api/comeaux/**'
+      - 'contracts/comeaux/**'
+      - 'mobile/ios/**'
+      - 'config/comeaux.artifacts.json'
+      - '.github/workflows/comeaux-platform-release.yml'
+  push:
+    branches: [feature/comeaux-clinical-store]
+    paths:
+      - 'app/api/comeaux/**'
+      - 'contracts/comeaux/**'
+      - 'mobile/ios/**'
+      - 'config/comeaux.artifacts.json'
+
+permissions:
+  contents: read
+
+jobs:
+  web-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - name: Validate required release files
+        run: |
+          test -f contracts/comeaux/openapi.yaml
+          test -f config/comeaux.artifacts.json
+          test -f cloud/apigee/api-hub/register.sh
+          test -f cloud/artifact-registry/publish.sh
+
+  ios-simulator:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: mobile/ios
+        run: xcodegen generate
+      - name: Build iOS simulator target
+        working-directory: mobile/ios
+        run: >-
+          xcodebuild -project ComeauxClinical.xcodeproj
+          -scheme ComeauxClinical
+          -sdk iphonesimulator
+          -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+          CODE_SIGNING_ALLOWED=NO
+          build
