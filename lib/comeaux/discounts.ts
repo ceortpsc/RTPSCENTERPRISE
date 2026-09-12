@@ -70,6 +70,45 @@ export const PROMO_RULES = {
   oneCredentialEntitlementPerCustomer: true
 } as const;
 
+export const PROMOTION_TEMPLATES = [
+  {
+    code: "TXCARE-FIRST15",
+    name: "New Verified Member",
+    audience: "verified-care-team",
+    discountPercent: 15,
+    oneTimePerCustomer: true,
+    activeByDefault: false,
+    description: "Optional first eligible order promotion after successful Texas credential verification."
+  },
+  {
+    code: "TX-NURSE-WEEK20",
+    name: "Texas Nurse Appreciation Sale",
+    audience: "nurse",
+    discountPercent: 20,
+    oneTimePerCustomer: false,
+    activeByDefault: false,
+    description: "Seasonal RN/LVN/APRN promotion template. Admin must set dates before activation."
+  },
+  {
+    code: "TX-CNA-MA15",
+    name: "CNA & Medication Aide Appreciation",
+    audience: "care-team",
+    discountPercent: 15,
+    oneTimePerCustomer: false,
+    activeByDefault: false,
+    description: "Seasonal Texas CNA and Medication Aide promotion template. Admin must set dates before activation."
+  },
+  {
+    code: "TXCARE-UNIFORM15",
+    name: "Care Team Uniform Bundle",
+    audience: "verified-care-team",
+    discountPercent: 15,
+    oneTimePerCustomer: false,
+    activeByDefault: false,
+    description: "Optional bundle-sale template for eligible uniform merchandise; order rules should enforce the configured minimum quantity."
+  }
+] as const;
+
 export function discountAmountCents(subtotalCents: number, bps = TEXAS_CARE_DISCOUNT.defaultDiscountBps) {
   return Math.floor((subtotalCents * bps) / 10_000);
 }
